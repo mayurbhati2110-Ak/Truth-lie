@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Truth Lie Detector</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    body.center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+      margin: 0;
+      background: linear-gradient(135deg, #c7d2fe, #e9d5ff);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .main-title {
+      font-size: 60px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      margin-bottom: 15px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: #f8fafc;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+
+    .primary-btn {
+      padding: 16px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 40px;
+      background: linear-gradient(90deg, #fda4af, #f9a8d4);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 8px 20px rgba(249, 168, 212, 0.4);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(249, 168, 212, 0.5);
+    }
+  </style>
+</head>
+
+<body class="center">
+
+  <div class="main-title">Truth Lie Detector</div>
+  <div class="subtitle">Analyze speech patterns and micro-expressions in real-time</div>
+
+  <button class="primary-btn" onclick="window.location.href='home.html'">
+      START DETECTION
+  </button>
+
+</body>
+</html>

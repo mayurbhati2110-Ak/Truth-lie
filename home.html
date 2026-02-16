@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Truth & Lie Detection</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #c7d2fe, #e9d5ff);
+      font-family: "Segoe UI", sans-serif;
+      color: white;
+    }
+
+    header {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      opacity: 0.9;
+    }
+
+    /* VIDEO CONTAINER */
+    .video-container {
+      position: relative;
+      width: 640px;
+      height: 360px;
+      margin: 40px auto 20px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    /* VIDEO ACTION BUTTONS */
+    .video-actions {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(90deg, #fda4af, #f9a8d4);
+      box-shadow: 0 8px 20px rgba(249, 168, 212, 0.4);
+      transition: 0.3s;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    /* CONTROL BUTTONS */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* RESULT */
+    .result {
+      margin-top: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .score {
+      font-size: 48px;
+      font-weight: 700;
+    }
+
+    .label {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    /* INFO BUTTON */
+    .info-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      cursor: pointer;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      padding: 6px 10px;
+    }
+
+    .info-box {
+      margin-top: 15px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 15px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .record-dot {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 18px;
+      height: 18px;
+      background: red;
+      border-radius: 50%;
+      box-shadow: 0 0 10px red;
+    }
+
+    .record-timer {
+      position: absolute;
+      top: 12px;
+      left: 45px;
+      font-weight: bold;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Truth & Lie Detection System</h1>
+  <p class="subtitle">AI Model Testing Interface</p>
+</header>
+
+<main>
+
+  <!-- VIDEO -->
+  <div class="video-container">
+    <video id="video" autoplay muted></video>
+
+    <div id="recordingDot" class="record-dot hidden"></div>
+    <div id="recordingTimer" class="record-timer hidden">00:00</div>
+
+    <div class="video-actions" id="videoActions">
+      <button class="action-btn" onclick="startCamera()">🎥 Record</button>
+      <button class="action-btn" onclick="document.getElementById('upload').click()">📤 Upload</button>
+    </div>
+
+    <div class="overlay hidden" id="overlay">Processing...</div>
+  </div>
+
+  <input type="file" id="upload" accept="video/*" hidden>
+
+  <!-- RECORD CONTROLS -->
+  <div class="controls hidden" id="recordControls">
+    <button class="action-btn" onclick="startRecording()">⏺ Start</button>
+    <button class="action-btn" onclick="stopRecording()">⏹ Stop</button>
+    <button class="action-btn" id="predictBtn" onclick="predict()" disabled>🧠 Predict</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result hidden" id="result">
+    <div class="info-btn" onclick="toggleInfo()">ℹ️</div>
+
+    <div class="score" id="finalScore"></div>
+    <div class="label" id="finalLabel"></div>
+
+    <div class="info-box hidden" id="infoBox">
+        <pre id="infoContent"></pre>
+    </div>
+
+    <p id="transcript"></p>
+  </div>
+
+</main>
+
+<script src="backend.js"></script>
+<script src="app.js"></script>
+
+<script>
+  const meanLieProb = 0.70;
+
+  function calculateScore(lieProb, truthProb) {
+    let score = 50 + ((lieProb - meanLieProb) / (1 - meanLieProb)) * 50;
+    score = Math.max(0, Math.min(100, score));
+    score = Math.round(score);
+
+    function getLabel(score) {
+      if (score <= 10) return "Strongly Truth";
+      if (score <= 50) return "Truth";
+      if (score <= 65) return "Weakly Truth";
+      if (score <= 75) return "Uncertain";
+      if (score <= 85) return "Weakly Lie";
+      if (score <= 90) return "Lie";
+      return "Strongly Lie";
+    }
+
+    document.getElementById("finalScore").textContent = `Score: ${score}/100`;
+    document.getElementById("finalLabel").textContent = getLabel(score);
+
+    document.getElementById("lieRaw").textContent = lieProb;
+    document.getElementById("truthRaw").textContent = truthProb;
+
+    document.getElementById("result").classList.remove("hidden");
+  }
+
+  function toggleInfo() {
+    document.getElementById("infoBox").classList.toggle("hidden");
+  }
+
+  /* Call these inside your existing logic */
+  function onVideoReady() {
+    document.getElementById("videoActions").classList.add("hidden");
+    document.getElementById("recordControls").classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
