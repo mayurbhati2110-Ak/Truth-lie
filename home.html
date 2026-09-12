@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Truth & Lie Detection</title>
+  <title>Deception Detection</title>
 
   <style>
     body {
@@ -161,7 +161,7 @@
 <body>
 
 <header>
-  <h1>Truth & Lie Detection System</h1>
+  <h1>DEception Detection System</h1>
   <p class="subtitle">AI Model Testing Interface</p>
 </header>
 
@@ -219,13 +219,13 @@
     score = Math.round(score);
 
     function getLabel(score) {
-      if (score <= 10) return "Strongly Truth";
-      if (score <= 50) return "Truth";
-      if (score <= 65) return "Weakly Truth";
+      if (score <= 10) return "Strongly Non-Deceptive";
+      if (score <= 50) return "Non-Deceptive";
+      if (score <= 65) return "Weakly Non-Deceptive";
       if (score <= 75) return "Uncertain";
-      if (score <= 85) return "Weakly Lie";
-      if (score <= 90) return "Lie";
-      return "Strongly Lie";
+      if (score <= 85) return "Weakly Deceptive";
+      if (score <= 90) return "Deceptive";
+      return "Strongly Deceptive";
     }
 
     document.getElementById("finalScore").textContent = `Score: ${score}/100`;
